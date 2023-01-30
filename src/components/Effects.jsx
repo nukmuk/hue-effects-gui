@@ -21,8 +21,10 @@ export default function Effects(props) {
 	const [previewEnabled, setPreviewEnabled] = useState(JSON.parse(window.localStorage.getItem("previewEnabled")));
 
 	useEffect(() => {
+		if (!previewEnabled) setTestMode(false);
 		window.localStorage.setItem("previewEnabled", previewEnabled);
 		window.localStorage.setItem("testMode", testMode);
+		invoke("set_test_mode", { enabled: testMode });
 	}, [previewEnabled, testMode]); // todo add persistence to scale, speed etc
 
 	const bridgeIP = "192.168.1.21";
@@ -61,12 +63,11 @@ export default function Effects(props) {
 
 	function changeTestMode(enabled) {
 		setTestMode(enabled);
-		invoke("set_test_mode", { enabled: enabled })
 	}
 
 	function changeEffect(effect) {
 		setEffect(effect);
-		invoke("set_effect", { effect: effect })
+		invoke("set_effect", { effect: effect });
 	}
 
 	return <>
@@ -75,18 +76,19 @@ export default function Effects(props) {
 				<Button variant="default" onClick={streaming ? stopStream : startStream}>{streaming ? "Stop" : "Start"}</Button>
 				<Button onClick={getEntAreas}>Get Entertainment Areas</Button>
 				<Switch
+					checked={previewEnabled}
+					onChange={e => setPreviewEnabled(e => !e)}
+					label="3D Room View"
+					size="md"
+				/>
+				<Switch
 					checked={testMode}
 					onChange={e => {
 						changeTestMode(e.currentTarget.checked);
 					}}
 					label="Test mode"
 					size="md"
-				/>
-				<Switch
-					checked={previewEnabled}
-					onChange={e => setPreviewEnabled(e => !e)}
-					label="3D Room View"
-					size="md"
+					disabled={streaming || !previewEnabled}
 				/>
 
 			</Flex>
