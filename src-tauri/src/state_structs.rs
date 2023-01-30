@@ -10,7 +10,7 @@ pub struct AppState {
     pub searching: bool,
     pub test_mode: bool,
     pub effect: Effect,
-    pub frequency: u16,
+    pub frequency: u8,
     pub rainbow: RainbowStats,
 }
 
@@ -21,6 +21,12 @@ pub enum Effect {
     Flash,
     Solid,
     None,
+}
+
+#[derive(Debug, Default)]
+pub struct EffectStruct {
+    pub effect: Mutex<Effect>,
+    pub solid_color: Mutex<colorsys::Rgb>,
 }
 
 #[derive(Debug, Default)]

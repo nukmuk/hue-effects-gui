@@ -23,6 +23,7 @@ use crate::{
     getkey,
     message::{Channel, Message, MessageHead},
     shader::p2c,
+    state_structs::{Effect, EffectStruct},
     AppStateStruct,
 };
 
@@ -45,6 +46,45 @@ async fn create_reqwest_client() -> Client {
 }
 
 #[tauri::command]
+pub async fn set_effect(effect: Effect, state: State<'_, EffectStruct>) -> Result<(), ()> {
+    println!("setting effect to: {:?}", effect);
+    *state.effect.lock().unwrap() = effect;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn edit_rainbow(
+    angle: Option<f64>,
+    scale: Option<f64>,
+    speed: Option<f64>,
+    state: State<'_, AppStateStruct>,
+) -> Result<(), ()> {
+    let mut state = state.0.lock().unwrap();
+    let rainbow = &mut state.rainbow;
+
+    if angle.is_some() {
+        println!("setting angle to: {:?}", angle);
+        rainbow.angle = angle.unwrap();
+    } else if scale.is_some() {
+        println!("setting scale to: {:?}", scale);
+        rainbow.scale = scale.unwrap();
+    } else if speed.is_some() {
+        println!("setting speed to: {:?}", speed);
+        rainbow.speed = speed.unwrap();
+    }
+
+    // if angle != Some(-1.0) {
+    //     rainbow.angle = angle.unwrap();
+    // } else if scale != Some(-1.0) {
+    //     rainbow.scale = scale.unwrap();
+    // } else if speed != Some(-1.0) {
+    //     rainbow.speed = speed.unwrap();
+    // }
+
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn fetch(url: &str) -> Result<String, ()> {
     let client = create_reqwest_client().await;
 
@@ -64,6 +104,7 @@ pub async fn fetch(url: &str) -> Result<String, ()> {
 pub async fn start_stream(
     url: &str,
     state: tauri::State<'_, AppStateStruct>,
+    effect_state: tauri::State<'_, EffectStruct>,
     window: Window,
 ) -> Result<(), ()> {
     state.0.lock().unwrap().streaming = true;
@@ -115,6 +156,7 @@ pub async fn start_stream(
         println!("increment: {}", increment);
         let mut msg_channels = Vec::new();
         let channel_count = data.len() as u8;
+        let effect = *effect_state.effect.lock().unwrap();
         data.iter().for_each(|channel| {
             let color = p2c(
                 channel.position.x,
@@ -124,6 +166,7 @@ pub async fn start_stream(
                 channel.channel_id,
                 channel_count,
                 &state,
+                &effect_state,
             );
 
             let result = Channel {
@@ -161,10 +204,8 @@ pub async fn start_stream(
         time_step += increment;
         // println!("{:?}", msg_built);
         // sleep(time::Duration::from_millis(1000 / 50));
-        tokio::time::sleep(tokio::time::Duration::from_millis(
-            (1000 / &frequency).into(),
-        ))
-        .await;
+        let sleep_time = 1000 / frequency as u64;
+        tokio::time::sleep(tokio::time::Duration::from_millis(sleep_time)).await;
     }
 
     dtls_conn.close().await.unwrap();

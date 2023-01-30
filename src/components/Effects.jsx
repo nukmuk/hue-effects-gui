@@ -4,6 +4,7 @@ import { Button, Flex, NumberInput, SegmentedControl, Slider, Switch } from "@ma
 import { invoke } from "@tauri-apps/api/tauri";
 import { Prism } from "@mantine/prism";
 import { useEffect } from "react";
+import RainbowControls from "./RoomPreview/RainbowControls.jsx";
 
 export default function Effects(props) {
 
@@ -28,20 +29,10 @@ export default function Effects(props) {
 	}, [previewEnabled, testMode]); // todo add localStorage to scale, speed etc
 
 	useEffect(() => {
-
+		invoke("set_frequency", { frequency: frequency });
 	}, [frequency]); // todo add persistence to scale, speed etc
 
 	const bridgeIP = "192.168.1.21";
-
-	async function changeScale(e) {
-		await invoke("edit_rainbow", { angle: -1, scale: e, speed: -1 });
-	};
-	async function changeSpeed(e) {
-		await invoke("edit_rainbow", { angle: -1, scale: -1, speed: e });
-	};
-	async function changeAngle(e) {
-		await invoke("edit_rainbow", { angle: e, scale: -1, speed: -1 });
-	};
 
 	async function getEntAreas() {
 		console.log("get entertainment areas");
@@ -108,12 +99,7 @@ export default function Effects(props) {
 
 			{previewEnabled ? <RoomPreview areas={areas} /> : null}
 
-			Scale
-			<Slider size={"lg"} color={"yellow"} defaultValue={1} step={0.01} max={10} onChange={e => changeScale(e)} />
-			Speed
-			<Slider size={"lg"} color={"indigo"} defaultValue={1} step={0.01} max={100} onChange={e => changeSpeed(e)} />
-			Angle
-			<Slider size={"lg"} color={"red"} max={360} disabled="true" onChange={e => changeAngle(e)} />
+			<RainbowControls />
 
 			<NumberInput label="Frequency" value={frequency} min={1} max={120} onChange={e => setFrequency(e)} />
 

@@ -36,27 +36,6 @@ use state_structs::*;
 
 // use message::{Channel, HueColor, Message, MessageHead, Hello};
 
-#[tauri::command]
-async fn edit_rainbow(
-    angle: f64,
-    scale: f64,
-    speed: f64,
-    state: State<'_, AppStateStruct>,
-) -> Result<(), ()> {
-    let mut state = state.0.lock().unwrap();
-    let rainbow = &mut state.rainbow;
-
-    if angle != -1.0 {
-        rainbow.angle = angle;
-    } else if scale != -1.0 {
-        rainbow.scale = scale;
-    } else if speed != -1.0 {
-        rainbow.speed = speed;
-    }
-
-    Ok(())
-}
-
 #[derive(Debug, Serialize, Clone)]
 struct HueBridge {
     address: String,
@@ -122,13 +101,6 @@ async fn set_test_mode(enabled: bool, state: State<'_, AppStateStruct>) -> Resul
     Ok(())
 }
 
-#[tauri::command]
-async fn set_effect(effect: Effect, state: State<'_, AppStateStruct>) -> Result<(), ()> {
-    println!("setting effect to: {:?}", effect);
-    state.0.lock().unwrap().effect = effect;
-    Ok(())
-}
-
 fn getkey(hint: &[u8]) -> Result<Vec<u8>, Error> {
     let contents = fs::read_to_string("psk.txt").expect("Should have been able to read the file");
 
@@ -162,6 +134,10 @@ async fn main() {
         .manage(AppKeys {
             ..Default::default()
         })
+        .manage(EffectStruct {
+            effect: Mutex::from(Effect::Rainbow),
+            solid_color: Mutex::from(colorsys::Rgb::new(0.0, 0.0, 0.0, None)),
+        })
         .invoke_handler(tauri::generate_handler![
             fetch,
             start_stream,
@@ -170,7 +146,7 @@ async fn main() {
             stop_discover,
             edit_rainbow,
             set_test_mode,
-            set_effect
+            set_effect,
         ])
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .run(tauri::generate_context!())
