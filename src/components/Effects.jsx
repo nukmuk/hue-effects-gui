@@ -99,6 +99,7 @@ export default function Effects(props) {
 			/>
 
 			{previewEnabled ? <RoomPreview areas={areas} /> : null}
+
 			{effect === "Rainbow" ? <RainbowControls /> : null}
 			{effect === "Solid" ? <SolidControls /> : null}
 

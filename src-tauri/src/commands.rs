@@ -6,7 +6,7 @@ use reqwest::{
     Client,
 };
 use tauri::{State, Window};
-use tauri_plugin_window_state::WindowExt;
+
 use tokio::{fs, net::UdpSocket};
 use webrtc::{
     dtls::{
@@ -20,7 +20,7 @@ use webrtc::{
 use crate::{
     convert_color_to_rgb::hsl_to_tuple,
     entertainment_config::EntertainmentConfig,
-    getkey,
+    get_psk,
     message::{Channel, Message, MessageHead},
     shader::p2c,
     state_structs::{Effect, EffectStruct},
@@ -137,7 +137,7 @@ pub async fn start_stream(
     println!("connecting {}..", bridge_ip);
 
     let config = Config {
-        psk: Some(Arc::new(getkey)),
+        psk: Some(Arc::new(get_psk)),
         psk_identity_hint: Some("webrtc-rs DTLS Server".as_bytes().to_vec()),
         cipher_suites: vec![CipherSuiteId::Tls_Psk_With_Aes_128_Gcm_Sha256],
         extended_master_secret: ExtendedMasterSecretType::Require,
@@ -209,5 +209,26 @@ pub async fn start_stream(
     }
 
     dtls_conn.close().await.unwrap();
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn stop_discover(state: State<'_, AppStateStruct>) -> Result<(), ()> {
+    println!("stopping discover");
+    state.0.lock().unwrap().searching = false;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn stop_stream(state: tauri::State<'_, AppStateStruct>) -> Result<(), ()> {
+    state.0.lock().unwrap().streaming = false;
+    print!("stopped stream: {:#?}", state);
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn set_test_mode(enabled: bool, state: State<'_, AppStateStruct>) -> Result<(), ()> {
+    println!("setting test mode to: {:?}", enabled);
+    state.0.lock().unwrap().test_mode = enabled;
     Ok(())
 }

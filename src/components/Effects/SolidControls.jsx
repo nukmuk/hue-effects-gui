@@ -13,6 +13,6 @@ export default function SolidControls() {
 
 
     return (
-        <ColorPicker onChange={setColor} />
+        <ColorPicker onChange={setColor} size='lg' />
     )
 }

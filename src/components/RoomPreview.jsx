@@ -90,7 +90,7 @@ export default function RoomPreview(props) {
 
 
     return (
-        <Canvas style={{ height: "400px", width: "500px" }} // todo: doesn't shrink when shrinking window ?
+        <Canvas style={{ height: "400px", width: "500px", marginBottom: "4px" }} // todo: doesn't shrink when shrinking window ?
         // camera={{ position: [40, 20, 40], fov: 5, }}
         >
             <OrthographicCamera makeDefault position={[20, 10, 20]} zoom={80} />
