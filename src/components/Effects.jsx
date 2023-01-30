@@ -25,11 +25,13 @@ export default function Effects(props) {
 		window.localStorage.setItem("previewEnabled", previewEnabled);
 		window.localStorage.setItem("testMode", testMode);
 		invoke("set_test_mode", { enabled: testMode });
-	}, [previewEnabled, testMode]); // todo add persistence to scale, speed etc
+	}, [previewEnabled, testMode]); // todo add localStorage to scale, speed etc
+
+	useEffect(() => {
+
+	}, [frequency]); // todo add persistence to scale, speed etc
 
 	const bridgeIP = "192.168.1.21";
-	const username = "jFH2gdRLevNsZe0pvfsx6aT8hvrDhvRrfIGOVv8i";
-	const psk = "520365836F859C7AEF2AC64D8AC500D4";
 
 	async function changeScale(e) {
 		await invoke("edit_rainbow", { angle: -1, scale: e, speed: -1 });
@@ -111,11 +113,9 @@ export default function Effects(props) {
 			Speed
 			<Slider size={"lg"} color={"indigo"} defaultValue={1} step={0.01} max={100} onChange={e => changeSpeed(e)} />
 			Angle
-			<Slider size={"lg"} color={"red"} max={360} onChange={e => changeAngle(e)} />
+			<Slider size={"lg"} color={"red"} max={360} disabled="true" onChange={e => changeAngle(e)} />
 
-			<NumberInput>
-				{/* todo */}
-			</NumberInput>
+			<NumberInput label="Frequency" value={frequency} min={1} max={120} onChange={e => setFrequency(e)} />
 
 			<Prism language="json" >
 				{JSON.stringify(areas, null, 2)}
