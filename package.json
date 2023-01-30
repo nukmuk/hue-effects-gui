@@ -1,0 +1,38 @@
+{
+  "name": "tauri-test-2",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@mantine/core": "^5.10.1",
+    "@mantine/hooks": "^5.10.1",
+    "@mantine/prism": "^5.10.1",
+    "@nodertc/dtls": "^0.6.0",
+    "@react-three/drei": "^9.56.1",
+    "@react-three/fiber": "^8.10.1",
+    "@react-three/postprocessing": "^2.7.0",
+    "@tauri-apps/api": "^1.2.0",
+    "@types/three": "^0.148.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.6.2",
+    "three": "^0.148.0",
+    "vite-plugin-require": "^1.1.10"
+  },
+  "devDependencies": {
+    "@originjs/vite-plugin-commonjs": "^1.0.3",
+    "@tauri-apps/cli": "^1.2.2",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.0.0",
+    "prettier": "^2.8.3",
+    "vite": "^3.0.2"
+  }
+}

@@ -1,0 +1,9 @@
+.devices {
+	background: #202225;
+	margin: 16px;
+	border-radius: 16px;
+	height: min-content;
+	width: 300px;
+	min-height: 50px;
+	overflow-y: scroll;
+}
