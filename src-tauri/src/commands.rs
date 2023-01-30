@@ -5,6 +5,7 @@ use reqwest::{
     header::{HeaderMap, HeaderValue},
     Client,
 };
+use serde::Deserialize;
 use tauri::{State, Window};
 
 use tokio::{fs, net::UdpSocket};
@@ -24,7 +25,7 @@ use crate::{
     message::{Channel, Message, MessageHead},
     shader::p2c,
     state_structs::{Effect, EffectStruct},
-    AppStateStruct,
+    AppKeys, AppStateStruct,
 };
 
 async fn create_reqwest_client() -> Client {
@@ -57,6 +58,20 @@ pub async fn set_solid_color(color: String, state: State<'_, EffectStruct>) -> R
     let color = Rgb::from_hex_str(&color).unwrap();
     println!("setting color to: {:?}", color);
     *state.solid_color.lock().unwrap() = color;
+    Ok(())
+}
+
+#[derive(Debug, Deserialize)]
+pub struct HueOptions {
+    frequency: Option<u8>,
+}
+
+#[tauri::command]
+pub fn edit_options(options: HueOptions, state: State<'_, AppStateStruct>) -> Result<(), ()> {
+    if options.frequency.is_some() {
+        println!("setting frequency to: {:?}", options.frequency);
+        state.0.lock().unwrap().frequency = options.frequency.unwrap();
+    }
     Ok(())
 }
 
@@ -105,6 +120,7 @@ pub async fn start_stream(
     url: &str,
     state: tauri::State<'_, AppStateStruct>,
     effect_state: tauri::State<'_, EffectStruct>,
+    keys_state: tauri::State<'_, AppKeys>,
     window: Window,
 ) -> Result<(), ()> {
     state.0.lock().unwrap().streaming = true;

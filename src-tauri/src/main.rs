@@ -41,7 +41,7 @@ struct HueBridge {
 }
 
 #[derive(Default)]
-struct AppKeys {
+pub struct AppKeys {
     application_key: Mutex<String>,
     psk: Mutex<String>,
 }
@@ -79,7 +79,8 @@ async fn main() {
             edit_rainbow,
             set_test_mode,
             set_effect,
-            set_solid_color
+            set_solid_color,
+            edit_options,
         ])
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .run(tauri::generate_context!())

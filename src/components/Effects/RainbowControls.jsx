@@ -15,7 +15,7 @@ export default function RainbowControls() {
     function useSetRainbowProperty(property, type) {
         useEffect(() => {
             invoke("edit_rainbow", { [type]: property });
-        }, [property]);
+        }, [property]);  // todo add localStorage to scale, speed etc
     }
 
     return (

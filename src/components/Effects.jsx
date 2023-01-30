@@ -27,11 +27,11 @@ export default function Effects(props) {
 		window.localStorage.setItem("previewEnabled", previewEnabled);
 		window.localStorage.setItem("testMode", testMode);
 		invoke("set_test_mode", { enabled: testMode });
-	}, [previewEnabled, testMode]); // todo add localStorage to scale, speed etc
+	}, [previewEnabled, testMode]);
 
 	useEffect(() => {
-		invoke("set_frequency", { frequency: frequency });
-	}, [frequency]); // todo add persistence to scale, speed etc
+		invoke("edit_options", { options: { frequency } });
+	}, [frequency]);
 
 	const bridgeIP = "192.168.1.21";
 
@@ -104,7 +104,7 @@ export default function Effects(props) {
 			{effect === "Solid" ? <SolidControls /> : null}
 
 
-			<NumberInput label="Frequency" value={frequency} min={1} max={120} onChange={e => setFrequency(e)} />
+			<NumberInput label="Frequency" value={frequency} min={1} max={120} onChange={setFrequency} />
 
 			<Prism language="json" >
 				{JSON.stringify(areas, null, 2)}
