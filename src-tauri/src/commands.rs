@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use colorsys::Hsl;
+use colorsys::{Hsl, Rgb};
 use reqwest::{
     header::{HeaderMap, HeaderValue},
     Client,
@@ -53,6 +53,14 @@ pub async fn set_effect(effect: Effect, state: State<'_, EffectStruct>) -> Resul
 }
 
 #[tauri::command]
+pub async fn set_solid_color(color: String, state: State<'_, EffectStruct>) -> Result<(), ()> {
+    let color = Rgb::from_hex_str(&color).unwrap();
+    println!("setting color to: {:?}", color);
+    *state.solid_color.lock().unwrap() = color;
+    Ok(())
+}
+
+#[tauri::command]
 pub async fn edit_rainbow(
     angle: Option<f64>,
     scale: Option<f64>,
@@ -72,14 +80,6 @@ pub async fn edit_rainbow(
         println!("setting speed to: {:?}", speed);
         rainbow.speed = speed.unwrap();
     }
-
-    // if angle != Some(-1.0) {
-    //     rainbow.angle = angle.unwrap();
-    // } else if scale != Some(-1.0) {
-    //     rainbow.scale = scale.unwrap();
-    // } else if speed != Some(-1.0) {
-    //     rainbow.speed = speed.unwrap();
-    // }
 
     Ok(())
 }

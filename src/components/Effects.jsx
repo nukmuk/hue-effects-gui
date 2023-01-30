@@ -4,7 +4,8 @@ import { Button, Flex, NumberInput, SegmentedControl, Slider, Switch } from "@ma
 import { invoke } from "@tauri-apps/api/tauri";
 import { Prism } from "@mantine/prism";
 import { useEffect } from "react";
-import RainbowControls from "./RoomPreview/RainbowControls.jsx";
+import RainbowControls from "./Effects/RainbowControls.jsx";
+import SolidControls from "./Effects/SolidControls.jsx";
 
 export default function Effects(props) {
 
@@ -98,8 +99,9 @@ export default function Effects(props) {
 			/>
 
 			{previewEnabled ? <RoomPreview areas={areas} /> : null}
+			{effect === "Rainbow" ? <RainbowControls /> : null}
+			{effect === "Solid" ? <SolidControls /> : null}
 
-			<RainbowControls />
 
 			<NumberInput label="Frequency" value={frequency} min={1} max={120} onChange={e => setFrequency(e)} />
 

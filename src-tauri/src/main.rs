@@ -147,6 +147,7 @@ async fn main() {
             edit_rainbow,
             set_test_mode,
             set_effect,
+            set_solid_color
         ])
         .plugin(tauri_plugin_window_state::Builder::default().build())
         .run(tauri::generate_context!())
