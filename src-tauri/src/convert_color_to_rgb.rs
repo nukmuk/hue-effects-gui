@@ -1,9 +1,13 @@
 use colorsys;
 
-pub fn color_to_rgb_tuple(color_hsl: &colorsys::Hsl) -> (u16, u16, u16) {
-    let color_rgb = colorsys::Rgb::from(color_hsl).into();
-    // let ratio = color_rgb.as_ratio();
-    let result = multiply_tuple(color_rgb, 257);
+pub fn hsl_to_tuple(color_hsl: &colorsys::Hsl) -> (u16, u16, u16) {
+    let color_rgb = colorsys::Rgb::from(color_hsl);
+    rgb_to_tuple(&color_rgb)
+}
+
+pub fn rgb_to_tuple(color_rgb: &colorsys::Rgb) -> (u16, u16, u16) {
+    let tuple: (u16, u16, u16) = color_rgb.into();
+    let result = multiply_tuple(tuple, 257);
     println!("{:?}", result);
     result
 }

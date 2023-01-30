@@ -18,7 +18,7 @@ use webrtc::{
 };
 
 use crate::{
-    convert_color_to_rgb::color_to_rgb_tuple,
+    convert_color_to_rgb::hsl_to_tuple,
     entertainment_config::EntertainmentConfig,
     getkey,
     message::{Channel, Message, MessageHead},
@@ -124,7 +124,7 @@ pub async fn start_stream(
     let bridge_ip = "192.168.1.21:2100";
 
     let color_hsl = Hsl::new(0.0, 100.0, 50.0, None);
-    let color_tuple = color_to_rgb_tuple(&color_hsl);
+    let color_tuple = hsl_to_tuple(&color_hsl);
     // println!("{:?}", color_tuple);
 
     let fetched_channels = fetch("https://192.168.1.21/clip/v2/resource/entertainment_configuration/199e6eed-da27-488f-9184-7f0236913765").await.unwrap();

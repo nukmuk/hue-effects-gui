@@ -1,7 +1,7 @@
 use tauri::State;
 
 use crate::{
-    convert_color_to_rgb::color_to_rgb_tuple,
+    convert_color_to_rgb::{hsl_to_tuple, rgb_to_tuple},
     state_structs::{Effect, EffectStruct},
     AppStateStruct,
 };
@@ -23,11 +23,11 @@ pub fn p2c(
 
             let color = colorsys::Hsl::from((hue, 100.0, 50.0));
 
-            let result = color_to_rgb_tuple(&color);
+            let result = hsl_to_tuple(&color);
             result
         }
         Effect::Flash => (0, 0, 65535),
-        Effect::Solid => (0, 0, 65535),
+        Effect::Solid => rgb_to_tuple(&*effect_state.solid_color.lock().unwrap()),
         _ => (0, 0, 0),
     }
 }
