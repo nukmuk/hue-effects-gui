@@ -1,4 +1,3 @@
-use crate::Effect::*;
 use tauri::State;
 
 use crate::{convert_color_to_rgb::color_to_rgb_tuple, AppStateStruct};
