@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use colorsys::{Hsl, Rgb};
+use rand::{distributions::Uniform, prelude::Distribution, Rng, SeedableRng};
 use reqwest::{
     header::{HeaderMap, HeaderValue},
     Client,
@@ -23,7 +24,7 @@ use crate::{
     entertainment_config::EntertainmentConfig,
     get_psk,
     message::{Channel, Message, MessageHead},
-    shader::p2c,
+    shader::calculate_light_color,
     state_structs::{Effect, EffectStruct},
     AppKeys, AppStateStruct,
 };
@@ -68,7 +69,7 @@ pub struct HueOptions {
 
 #[tauri::command]
 pub fn edit_options(options: HueOptions, state: State<'_, AppStateStruct>) -> Result<(), ()> {
-    if options.frequency.is_some() {
+    if options.frequency.is_some() && options.frequency.unwrap() != 0 {
         println!("setting frequency to: {:?}", options.frequency);
         state.0.lock().unwrap().frequency = options.frequency.unwrap();
     }
@@ -164,25 +165,29 @@ pub async fn start_stream(
 
     println!("Connected;");
 
-    let mut time_step = 0.0;
+    let mut time_step: f64 = 0.0;
+    let mut rng = rand::rngs::StdRng::from_entropy();
+    let channel_count = data.len() as u8;
+    let uniform = Uniform::from(0..channel_count);
 
     while state.0.lock().unwrap().streaming {
         let frequency = state.0.lock().unwrap().frequency;
         let increment = state.0.lock().unwrap().rainbow.speed / 10.0;
         println!("increment: {}", increment);
         let mut msg_channels = Vec::new();
-        let channel_count = data.len() as u8;
         let effect = *effect_state.effect.lock().unwrap();
+        let flash_n = uniform.sample(&mut rng);
+        // let flash_n = 0;
         data.iter().for_each(|channel| {
-            let color = p2c(
+            let color = calculate_light_color(
                 channel.position.x,
                 channel.position.y,
                 channel.position.z,
                 time_step,
                 channel.channel_id,
-                channel_count,
                 &state,
                 &effect_state,
+                flash_n,
             );
 
             let result = Channel {
@@ -219,7 +224,6 @@ pub async fn start_stream(
         }
         time_step += increment;
         // println!("{:?}", msg_built);
-        // sleep(time::Duration::from_millis(1000 / 50));
         let sleep_time = 1000 / frequency as u64;
         tokio::time::sleep(tokio::time::Duration::from_millis(sleep_time)).await;
     }

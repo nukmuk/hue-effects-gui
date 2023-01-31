@@ -33,6 +33,11 @@ export default function Effects(props) {
 		invoke("edit_options", { options: { frequency } });
 	}, [frequency]);
 
+	useEffect(() => {
+		invoke("set_effect", { effect });
+	}, [effect]);
+
+
 	const bridgeIP = "192.168.1.21";
 
 	async function getEntAreas() {
@@ -57,11 +62,6 @@ export default function Effects(props) {
 
 	function changeTestMode(enabled) {
 		setTestMode(enabled);
-	}
-
-	function changeEffect(effect) {
-		setEffect(effect);
-		invoke("set_effect", { effect: effect });
 	}
 
 	return <>
@@ -89,7 +89,7 @@ export default function Effects(props) {
 
 			<SegmentedControl
 				value={effect}
-				onChange={changeEffect}
+				onChange={setEffect}
 				data={[
 					{ label: "Rainbow", value: "Rainbow" },
 					{ label: "Flash", value: "Flash" },
@@ -101,7 +101,7 @@ export default function Effects(props) {
 			{previewEnabled ? <RoomPreview areas={areas} /> : null}
 
 			{effect === "Rainbow" ? <RainbowControls /> : null}
-			{effect === "Solid" ? <SolidControls /> : null}
+			{effect === "Solid" || "Flash" ? <SolidControls /> : null}
 
 
 			<NumberInput label="Frequency" value={frequency} min={1} max={120} onChange={setFrequency} />

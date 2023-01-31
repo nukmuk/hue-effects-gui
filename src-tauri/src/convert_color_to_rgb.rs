@@ -1,5 +1,3 @@
-use colorsys;
-
 pub fn hsl_to_tuple(color_hsl: &colorsys::Hsl) -> (u16, u16, u16) {
     let color_rgb = colorsys::Rgb::from(color_hsl);
     rgb_to_tuple(&color_rgb)
