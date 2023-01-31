@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Slider } from '@mantine/core'
 import { invoke } from '@tauri-apps/api';
-import { getFromStorage } from '../../utils.js';
+import { getFromStorage, useLocalStorage } from '../../utils.js';
 
 export default function RainbowControls(props) {
 
-    const [scale, setScale] = useState(getFromStorage("scale", 1.2));
-    const [speed, setSpeed] = useState(getFromStorage("speed", 5));
-    const [angle, setAngle] = useState(getFromStorage("angle", 90));
+    const [scale, setScale] = useLocalStorage("scale", 1.2);
+    const [speed, setSpeed] = useLocalStorage("speed", 5);
+    const [angle, setAngle] = useLocalStorage("angle", 90);
 
     useSetRainbowProperty(scale, "scale");
     useSetRainbowProperty(speed, "speed");

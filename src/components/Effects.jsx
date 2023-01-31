@@ -22,10 +22,10 @@ export default function Effects(props) {
 
 	const [areas, setAreas] = useState(exampleArea);
 	const [streaming, setStreaming] = useState(JSON.parse(sessionStorage.getItem("streaming")) || false);
-	const [testMode, setTestMode] = useState(getFromStorage("testMode") || true);
-	const [frequency, setFrequency] = useLocalStorage("frequency", 22);
-	const [effect, setEffect] = useState(getFromStorage("effect") || "Rainbow");
-	const [previewEnabled, setPreviewEnabled] = useState(JSON.parse(localStorage.getItem("previewEnabled")));
+	const [testMode, setTestMode] = useLocalStorage("testMode", true);
+	const [frequency, setFrequency] = useLocalStorage("frequency", 50);
+	const [effect, setEffect] = useLocalStorage("effect", "Rainbow");
+	const [previewEnabled, setPreviewEnabled] = useLocalStorage("previewEnabled", true);
 
 	useEffect(() => {
 		// if (!previewEnabled) setTestMode(false);
