@@ -23,7 +23,7 @@ export default function Effects(props) {
 	const [previewEnabled, setPreviewEnabled] = useState(JSON.parse(window.localStorage.getItem("previewEnabled")));
 
 	useEffect(() => {
-		if (!previewEnabled) setTestMode(false);
+		// if (!previewEnabled) setTestMode(false);
 		window.localStorage.setItem("previewEnabled", previewEnabled);
 		window.localStorage.setItem("testMode", testMode);
 		invoke("set_test_mode", { enabled: testMode });
@@ -37,6 +37,16 @@ export default function Effects(props) {
 		invoke("set_effect", { effect });
 	}, [effect]);
 
+	useEffect(() => {
+		if (streaming) {
+			console.log("start stream");
+			invoke("start_stream", { url: `https://${bridgeIP}/clip/v2/resource/entertainment_configuration/199e6eed-da27-488f-9184-7f0236913765` });
+		} else {
+			console.log("stop stream");
+			invoke("stop_stream", { url: `https://${bridgeIP}/clip/v2/resource/entertainment_configuration/199e6eed-da27-488f-9184-7f0236913765` });
+		}
+	}, [streaming]);
+
 
 	const bridgeIP = "192.168.1.21";
 
@@ -48,18 +58,6 @@ export default function Effects(props) {
 		console.log(resultData);
 	};
 
-	async function startStream() {
-		console.log("start stream");
-		setStreaming(true);
-		await invoke("start_stream", { url: `https://${bridgeIP}/clip/v2/resource/entertainment_configuration/199e6eed-da27-488f-9184-7f0236913765` });
-	};
-
-	async function stopStream() {
-		console.log("stop stream");
-		setStreaming(false);
-		await invoke("stop_stream", { url: `https://${bridgeIP}/clip/v2/resource/entertainment_configuration/199e6eed-da27-488f-9184-7f0236913765` });
-	};
-
 	function changeTestMode(enabled) {
 		setTestMode(enabled);
 	}
@@ -67,8 +65,8 @@ export default function Effects(props) {
 	return <>
 		<Flex direction="column" gap={"md"}>
 			<Flex gap={"xs"} align={"center"}>
-				<Button variant="default" onClick={streaming ? stopStream : startStream}>{streaming ? "Stop" : "Start"}</Button>
-				<Button onClick={getEntAreas}>Get Entertainment Areas</Button>
+				<Button variant={streaming ? "outline" : "default"} color={streaming ? "red" : "green"} onClick={() => setStreaming(prev => !prev)}>{streaming ? "Stop" : "Start"}</Button>
+				<Button onClick={getEntAreas} >Get Entertainment Areas</Button>
 				<Switch
 					checked={previewEnabled}
 					onChange={e => setPreviewEnabled(e => !e)}
@@ -101,7 +99,7 @@ export default function Effects(props) {
 			{previewEnabled ? <RoomPreview areas={areas} /> : null}
 
 			{effect === "Rainbow" ? <RainbowControls /> : null}
-			{effect === "Solid" || "Flash" ? <SolidControls /> : null}
+			{effect === "Solid" || effect === "Flash" ? <SolidControls /> : null}
 
 
 			<NumberInput label="Frequency" value={frequency} min={1} max={120} onChange={setFrequency} />

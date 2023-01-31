@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use colorsys::{Hsl, Rgb};
-use rand::{distributions::Uniform, prelude::Distribution, Rng, SeedableRng};
+use rand::{distributions::Uniform, prelude::Distribution, SeedableRng};
 use reqwest::{
     header::{HeaderMap, HeaderValue},
     Client,
@@ -229,13 +229,6 @@ pub async fn start_stream(
     }
 
     dtls_conn.close().await.unwrap();
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn stop_discover(state: State<'_, AppStateStruct>) -> Result<(), ()> {
-    println!("stopping discover");
-    state.0.lock().unwrap().searching = false;
     Ok(())
 }
 

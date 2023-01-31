@@ -13,13 +13,20 @@ export default function Device(props) {
 
 	if (props.type === "bridge") {
 		return <>
-			<Flex direction="column" p={"4px"}>
-				<Text>{props.name}</Text>
-				<Text color={"gray.6"}>{props.info}</Text>
-				<Flex justify={"flex-end"}>
-					<Button>Connect</Button>
+			<Paper
+				shadow="md"
+				p="xs"
+				radius="lg"
+				style={{ minWidth: "300px" }}
+			>
+				<Flex direction="column" p={"4px"}>
+					<Text>{props.name}</Text>
+					<Text color={"gray.6"}>{props.info}</Text>
+					<Flex justify={"flex-end"}>
+						<Button>Connect</Button>
+					</Flex>
 				</Flex>
-			</Flex>
+			</Paper>
 		</>
 	} else {
 		return <>
