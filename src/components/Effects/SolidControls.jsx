@@ -2,17 +2,19 @@ import { ColorPicker, Input } from '@mantine/core'
 import { invoke } from '@tauri-apps/api';
 import React, { useState } from 'react'
 import { useEffect } from 'react';
+import { useLocalStorage } from '../../utils';
 
 export default function SolidControls() {
 
-    const [color, setColor] = useState('#000000'); // todo: color isnt' persistent yet
+    const [color, setColor] = useLocalStorage("color", '#ffffff'); // todo: color isnt' persistent yet
 
     useEffect(() => {
+        localStorage.setItem("color", color);
         invoke("set_solid_color", { color });
     }, [color])
 
 
     return (
-        <ColorPicker onChange={setColor} size='lg' />
+        <ColorPicker value={color} onChange={setColor} size='lg' />
     )
 }

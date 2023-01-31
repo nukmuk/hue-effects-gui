@@ -7,7 +7,7 @@ export default function RainbowControls(props) {
 
     const [scale, setScale] = useState(getFromStorage("scale", 1.2));
     const [speed, setSpeed] = useState(getFromStorage("speed", 5));
-    const [angle, setAngle] = useState(getFromStorage("angle", 25));
+    const [angle, setAngle] = useState(getFromStorage("angle", 90));
 
     useSetRainbowProperty(scale, "scale");
     useSetRainbowProperty(speed, "speed");
