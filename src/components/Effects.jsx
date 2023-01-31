@@ -78,7 +78,7 @@ export default function Effects(props) {
 	return <>
 		<Flex direction="column" gap={"md"}>
 			<Flex gap={"xs"} align={"center"}>
-				<Button variant={streaming ? "outline" : "default"} color={streaming ? "red" : "green"} onClick={streaming ? () => setStreaming(false) : startStreaming}>{streaming ? "Stop" : "Start"}</Button>
+				<Button variant={streaming ? "outline" : "filled"} color={streaming ? "red" : "green"} onClick={streaming ? () => setStreaming(false) : startStreaming}>{streaming ? "Stop" : "Start"}</Button>
 				<Button onClick={getEntAreas} >Get Entertainment Areas</Button>
 				<Switch
 					checked={previewEnabled}
