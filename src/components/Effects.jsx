@@ -17,7 +17,7 @@ export default function Effects(props) {
 	]
 
 	const [areas, setAreas] = useState([{}, { channels: testLights }]);
-	const [streaming, setStreaming] = useState(sessionStorage.getItem("streaming") || false);
+	const [streaming, setStreaming] = useState(JSON.parse(sessionStorage.getItem("streaming")) || false);
 	const [testMode, setTestMode] = useState(getFromStorage("testMode") || true);
 	const [frequency, setFrequency] = useLocalStorage("frequency", 22);
 	const [effect, setEffect] = useState(getFromStorage("effect") || "Rainbow");
