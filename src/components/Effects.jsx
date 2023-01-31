@@ -6,8 +6,7 @@ import { Prism } from "@mantine/prism";
 import { useEffect } from "react";
 import RainbowControls from "./Effects/RainbowControls.jsx";
 import SolidControls from "./Effects/SolidControls.jsx";
-import { getFromStorage } from "../utils.js";
-import { useLocalStorage } from "@mantine/hooks";
+import { getFromStorage, useLocalStorage } from "../utils.js";
 
 export default function Effects(props) {
 
@@ -20,7 +19,7 @@ export default function Effects(props) {
 	const [areas, setAreas] = useState([{}, { channels: testLights }]);
 	const [streaming, setStreaming] = useState(sessionStorage.getItem("streaming") || false);
 	const [testMode, setTestMode] = useState(getFromStorage("testMode") || true);
-	const [frequency, setFrequency] = useState(getFromStorage("frequency") || 50);
+	const [frequency, setFrequency] = useLocalStorage("frequency", 22);
 	const [effect, setEffect] = useState(getFromStorage("effect") || "Rainbow");
 	const [previewEnabled, setPreviewEnabled] = useState(JSON.parse(localStorage.getItem("previewEnabled")));
 

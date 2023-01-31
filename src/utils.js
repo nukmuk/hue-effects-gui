@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 function getFromStorage(key) {
     const value = window.localStorage.getItem(key);
     console.log("get from storage", key, value);
@@ -8,4 +10,8 @@ function getFromStorage(key) {
     }
 }
 
-export { getFromStorage };
+function useLocalStorage(key, defaultValue) {
+    return useState(getFromStorage(key) || defaultValue);
+}
+
+export { getFromStorage, useLocalStorage };
