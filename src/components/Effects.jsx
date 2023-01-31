@@ -16,7 +16,7 @@ export default function Effects(props) {
 		{ position: { x: -1, y: 0.4, z: 0 } },
 	]
 
-	const [areas, setAreas] = useState([{}, { channels: testLights }]);
+	const [areas, setAreas] = useState(JSON.parse(sessionStorage.getItem("areas")) || [{}, { channels: testLights }]);
 	const [streaming, setStreaming] = useState(JSON.parse(sessionStorage.getItem("streaming")) || false);
 	const [testMode, setTestMode] = useState(getFromStorage("testMode") || true);
 	const [frequency, setFrequency] = useLocalStorage("frequency", 22);
@@ -62,6 +62,7 @@ export default function Effects(props) {
 		let result = await invoke("fetch", { url: `https://${bridgeIP}/clip/v2/resource/entertainment_configuration` });
 		const resultData = JSON.parse(result)["data"];
 		setAreas(resultData);
+		sessionStorage.setItem("areas", JSON.stringify(resultData));
 		console.log(resultData);
 	};
 
