@@ -19,7 +19,7 @@ pub fn calculate_light_color(
     match *effect_state.effect.lock().unwrap() {
         Effect::Rainbow => {
             let rainbow = &state.0.lock().unwrap().rainbow;
-            let hue = ((x) * rainbow.scale * 100.0 + time_step).rem_euclid(360.0);
+            let hue = ((x) * rainbow.scale + time_step).rem_euclid(360.0);
 
             let color = colorsys::Hsl::from((hue, 100.0, 50.0));
 

@@ -124,6 +124,10 @@ pub async fn start_stream(
     keys_state: tauri::State<'_, AppKeys>,
     window: Window,
 ) -> Result<(), ()> {
+    if state.0.lock().unwrap().streaming {
+        println!("already streaming");
+        return Ok(());
+    }
     state.0.lock().unwrap().streaming = true;
 
     let client = create_reqwest_client().await;
