@@ -5,9 +5,9 @@ import { getFromStorage, useLocalStorage } from '../../utils.js';
 
 export default function RainbowControls(props) {
 
-    const [scale, setScale] = useLocalStorage("scale", 1.2);
-    const [speed, setSpeed] = useLocalStorage("speed", 5);
-    const [angle, setAngle] = useLocalStorage("angle", 90);
+    const [scale, setScale] = useLocalStorage("scale", 50);
+    const [speed, setSpeed] = useLocalStorage("speed", 50);
+    const [angle, setAngle] = useLocalStorage("angle", 80);
 
     useSetRainbowProperty(scale, "scale");
     useSetRainbowProperty(speed, "speed");
