@@ -6,7 +6,7 @@ import { useLocalStorage } from '../../utils';
 
 export default function SolidControls() {
 
-    const [color, setColor] = useLocalStorage("color", '#ffffff'); // todo: color isnt' persistent yet
+    const [color, setColor] = useLocalStorage("color", '#ffffff');
 
     useEffect(() => {
         localStorage.setItem("color", color);

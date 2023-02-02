@@ -11,7 +11,7 @@ export default function Bridges(props) {
 	const [bridges, setBridges] = useState([{ name: "test", address: "127.0.0.1" }, { name: "test2", address: "127.0.0.1" }]);
 
 
-	useEffect(() => { // todo: discovery sometimes doesn't work in discovery mode
+	useEffect(() => { // todo: discovery sometimes doesn't work in react strict mode
 		const unlisten = appWindow.listen("bridgeFound", event => {
 			const payload = event.payload;
 			console.log("bridge found", payload);
