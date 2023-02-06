@@ -2,14 +2,11 @@ use std::sync::Arc;
 
 use colorsys::{Hsl, Rgb};
 use rand::{distributions::Uniform, prelude::Distribution, SeedableRng};
-use reqwest::{
-    header::{HeaderMap, HeaderValue},
-    Client,
-};
+
 use serde::Deserialize;
 use tauri::{State, Window};
 
-use tokio::{fs, net::UdpSocket};
+use tokio::{net::UdpSocket};
 use webrtc::{
     dtls::{
         cipher_suite::CipherSuiteId,
@@ -29,23 +26,7 @@ use crate::{
     AppKeys, AppStateStruct,
 };
 
-async fn create_reqwest_client() -> Client {
-    let mut headers = HeaderMap::new();
-
-    let contents = fs::read_to_string("hue-application-key.txt")
-        .await
-        .expect("Should have been able to read the file");
-
-    headers.append(
-        "hue-application-key",
-        HeaderValue::from_str(&contents).unwrap(),
-    );
-    reqwest::ClientBuilder::new()
-        .danger_accept_invalid_certs(true)
-        .default_headers(headers)
-        .build()
-        .unwrap_or_default()
-}
+use crate::util::*;
 
 #[tauri::command]
 pub async fn set_effect(effect: Effect, state: State<'_, EffectStruct>) -> Result<(), ()> {
@@ -129,10 +110,14 @@ pub async fn start_stream(
         return Ok(());
     }
     state.0.lock().unwrap().streaming = true;
+    let test_mode = state.0.lock().unwrap().test_mode;
 
-    let client = create_reqwest_client().await;
+    println!("test mode: {}", test_mode);
 
-    let body = client
+    if !test_mode {
+        let client = create_reqwest_client().await;
+        
+        let body = client
         .put(url)
         .body("{\"action\":\"start\"}")
         .send()
@@ -141,34 +126,45 @@ pub async fn start_stream(
         .text()
         .await
         .unwrap_or_default();
-
-    let bridge_ip = "192.168.1.21:2100";
-
+        
+    }
+    
     let color_hsl = Hsl::new(0.0, 100.0, 50.0, None);
     let color_tuple = hsl_to_tuple(&color_hsl);
     // println!("{:?}", color_tuple);
-
-    let fetched_channels = fetch("https://192.168.1.21/clip/v2/resource/entertainment_configuration/199e6eed-da27-488f-9184-7f0236913765").await.unwrap();
-
+    
+    let mut fetched_channels = example_area();
+    let mut conn = None;
+    
+    if !test_mode {
+        let bridge_ip = "192.168.1.21:2100";
+        fetched_channels = fetch("https://192.168.1.21/clip/v2/resource/entertainment_configuration/199e6eed-da27-488f-9184-7f0236913765").await.unwrap();
+        conn = Some(Arc::new(UdpSocket::bind("0.0.0.0:0").await.unwrap()));
+        conn.as_ref().unwrap().connect(bridge_ip).await.unwrap();
+    }
     let ent_config: EntertainmentConfig = serde_json::from_str(&fetched_channels).unwrap();
+    println!("fetched channels: {:#?}", ent_config);
     let data = &ent_config.data.first().unwrap().channels;
+    println!("testiiii");
 
-    let conn = Arc::new(UdpSocket::bind("0.0.0.0:0").await.unwrap());
-    conn.connect(bridge_ip).await.unwrap();
-    println!("connecting {}..", bridge_ip);
+    let mut dtls_conn = None;
 
-    let config = Config {
-        psk: Some(Arc::new(get_psk)),
-        psk_identity_hint: Some("webrtc-rs DTLS Server".as_bytes().to_vec()),
-        cipher_suites: vec![CipherSuiteId::Tls_Psk_With_Aes_128_Gcm_Sha256],
-        extended_master_secret: ExtendedMasterSecretType::Require,
-        ..Default::default()
-    };
-    let dtls_conn: Arc<dyn Conn + Send + Sync> =
-        Arc::new(DTLSConn::new(conn, config, true, None).await.unwrap());
+    if !test_mode {
+        let bridge_ip = "192.168.1.21:2100";
+        println!("connecting {}..", bridge_ip);
 
+        let config = Config {
+            psk: Some(Arc::new(get_psk)),
+            psk_identity_hint: Some("webrtc-rs DTLS Server".as_bytes().to_vec()),
+            cipher_suites: vec![CipherSuiteId::Tls_Psk_With_Aes_128_Gcm_Sha256],
+            extended_master_secret: ExtendedMasterSecretType::Require,
+            ..Default::default()
+        };
+        dtls_conn = Some(Arc::new(DTLSConn::new(conn.unwrap(), config, true, None).await.unwrap()));
+    }
     println!("Connected;");
 
+    
     let mut time_step: f64 = 0.0;
     let mut rng = rand::rngs::StdRng::from_entropy();
     let channel_count = data.len() as u8;
@@ -224,8 +220,8 @@ pub async fn start_stream(
 
         window.emit("lightUpdate", &test_msg.channels).unwrap();
 
-        if !state.0.lock().unwrap().test_mode {
-            dtls_conn.send(&*msg_built).await.expect("failed to send"); // &* syntax converts Vec to array
+        if !test_mode {
+                dtls_conn.as_ref().unwrap().send(&*msg_built).await.expect("failed to send"); // &* syntax converts Vec to array
         }
         time_step += increment;
         // println!("{:?}", msg_built);
@@ -233,7 +229,7 @@ pub async fn start_stream(
         tokio::time::sleep(tokio::time::Duration::from_millis(sleep_time)).await;
     }
 
-    dtls_conn.close().await.unwrap();
+    dtls_conn.unwrap().close().await.unwrap();
     Ok(())
 }
 

@@ -3,12 +3,12 @@ use serde::{Deserialize, Serialize};
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct EntertainmentConfig {
-    pub data: Vec<Daum>,
+    pub data: Vec<entertainment_configuration>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Daum {
+pub struct entertainment_configuration {
     pub channels: Vec<Channel>,
 }
 
